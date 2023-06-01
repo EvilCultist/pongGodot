@@ -1,0 +1,83 @@
+[gd_scene load_steps=8 format=3 uid="uid://en6hehepec4r"]
+
+[ext_resource type="PackedScene" uid="uid://cvb75podrgd7t" path="res://src/ground.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://dbb00y4q642n5" path="res://src/Bird.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://qvicdhprjlqs" path="res://src/Pipe.tscn" id="2_dokki"]
+[ext_resource type="Script" path="res://src/Main.gd" id="3"]
+
+[sub_resource type="Curve2D" id="Curve2D_s6cp3"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 1071, 200, 0, 0, 0, 0, 1071, 400)
+}
+point_count = 2
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_43d06"]
+size = Vector2(257, 635)
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(1200, 40)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("3")
+pipeScene = ExtResource("2_dokki")
+
+[node name="Container" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1024.0
+offset_bottom = 600.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="bg" type="ColorRect" parent="Container"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.196078, 0.85098, 0.698039, 1)
+
+[node name="pipes" type="Node2D" parent="."]
+
+[node name="spawnZone" type="Path2D" parent="."]
+curve = SubResource("Curve2D_s6cp3")
+
+[node name="spawnPoint" type="PathFollow2D" parent="spawnZone"]
+position = Vector2(1071, 200)
+rotation = 1.5708
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[node name="Bird" parent="." instance=ExtResource("2")]
+position = Vector2(524, 85)
+
+[node name="scoreCounter" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="scoreCounter"]
+position = Vector2(325.5, 307.5)
+shape = SubResource("RectangleShape2D_43d06")
+
+[node name="roof" type="StaticBody2D" parent="."]
+position = Vector2(514, -5)
+rotation = -3.14159
+metadata/_edit_group_ = true
+
+[node name="ColorRect" type="ColorRect" parent="roof"]
+offset_left = -600.0
+offset_top = -20.0
+offset_right = 600.0
+offset_bottom = 60.0
+color = Color(0.0862745, 0.176471, 0.113725, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="roof"]
+shape = SubResource("1")
+
+[node name="ground" parent="." groups=["lethal"] instance=ExtResource("1")]
+position = Vector2(512, 583)
+
+[connection signal="body_entered" from="scoreCounter" to="." method="_on_score_counter_body_entered"]
